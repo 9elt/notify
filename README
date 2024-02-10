@@ -2,6 +2,7 @@ notify
 
 A simple notification server
 
+
 GET /
 read client notifications
 
@@ -9,10 +10,10 @@ POST /
 post a notification (only from localhost)
 
 GET /version
-get current version
+server version
 
 POST /client
-register a client
+register client (current ip)
 
 DELETE /client
-delete a client
+delete client (current ip)
