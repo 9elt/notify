@@ -1,0 +1,57 @@
+#include <string>
+
+using namespace std;
+
+typedef unsigned int u32;
+
+#define GET_NOTIFICATIONS 1
+#define CREATE_NOTIFICATION 2
+#define CREATE_CLIENT 3
+#define DELETE_CLIENT 4
+#define GET_VERSION 5
+
+struct Request {
+    int endpoint;
+    string body;
+    Request() {
+        endpoint = -1;
+        body = "";
+    }
+    Request(string reqstr) {
+        if (reqstr.rfind("GET /", 0) == 0) {
+            endpoint = GET_NOTIFICATIONS;
+            return;
+        }
+
+        if (reqstr.rfind("POST /", 0) == 0)
+            endpoint = CREATE_NOTIFICATION;
+
+        if (reqstr.rfind("POST /client", 0) == 0) {
+            endpoint = CREATE_CLIENT;
+            return;
+        }
+
+        if (reqstr.rfind("DELETE /client", 0) == 0) {
+            endpoint = DELETE_CLIENT;
+            return;
+        }
+
+        if (reqstr.rfind("GET /version", 0) == 0) {
+            endpoint = GET_VERSION;
+            return;
+        }
+
+        u32 cursor = 0;
+        u32 count_nlines = 0;
+
+        for (; cursor < reqstr.length() && count_nlines < 2; cursor++)
+            if (reqstr[cursor] == 10)
+                count_nlines++;
+            else if (reqstr[cursor] != 13)
+                count_nlines = 0;
+
+        body = reqstr.erase(0, cursor);
+
+        return;
+    }
+};
