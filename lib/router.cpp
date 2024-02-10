@@ -1,8 +1,6 @@
 #include "router.hpp"
 
-char *response(string headers, string body) {
-    return headers.append(body).data();
-}
+string response(string headers, string body) { return headers.append(body); }
 
 string Router::handle_req(sockaddr_in addr, Request request) {
     in_addr_t ip = addr.sin_addr.s_addr;
