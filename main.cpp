@@ -9,8 +9,6 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-using namespace std;
-
 int main() {
     unsigned short port = 5555;
 
@@ -59,7 +57,6 @@ int main() {
 
         if (sfd == -1) {
             cerr << "cannot open socket" << endl;
-
             continue;
         }
 
@@ -68,7 +65,6 @@ int main() {
         if (read(sfd, buffer, 4095) < 0) {
             cerr << "cannot read response" << endl;
             close(sfd);
-
             continue;
         }
 

@@ -1,8 +1,6 @@
+#include "types.hpp"
 #include <arpa/inet.h>
 #include <netinet/in.h>
-#include <string>
-
-using namespace std;
 
 in_addr_t const LOCALHOST = inet_addr("127.0.0.1");
 

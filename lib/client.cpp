@@ -1,4 +1,54 @@
 #include "client.hpp"
+#include <ctime>
+#include <fstream>
+#include <iostream>
+#include <sstream>
+
+string const DATABASE = "./data/clients";
+
+void read_file(ClientsList *list) {
+    ifstream f(DATABASE);
+
+    if (!f)
+        return;
+
+    stringstream buffer;
+    buffer << f.rdbuf();
+
+    string data = buffer.str();
+
+    int t = 0;
+
+    string client[2];
+
+    for (u32 i = 0; i < data.length(); i++) {
+        auto c = data[i];
+        if (c == *"|")
+            t++;
+        else if (c == *";") {
+            i++;
+            t--;
+
+            time_t last_seen = (time_t)stoi(client[0]);
+            in_addr_t ip = (in_addr_t)stoi(client[1]);
+
+            if (list->has(ip))
+                list->get(ip)->last_seen = last_seen;
+            else
+                list->push(Client{last_seen, ip});
+
+            client[0] = "";
+            client[1] = "";
+        } else
+            client[t] += data[i];
+    }
+}
+
+void push_file(Client *client) {
+    ofstream f;
+    f.open(DATABASE, ios_base::app);
+    f << client->to_string();
+}
 
 Client::Client() {}
 
@@ -7,12 +57,28 @@ Client::Client(in_addr_t _ip) {
     ip = _ip;
 }
 
-void Client::last_seen_now() { last_seen = time(0); }
+Client::Client(time_t _last_seen, in_addr_t _ip) {
+    last_seen = _last_seen;
+    ip = _ip;
+}
+
+void Client::last_seen_now() {
+    last_seen = time(0);
+    push_file(this);
+}
+
+string Client::to_string() {
+    return std::to_string(last_seen) + "|" + std::to_string(ip) + ";\n";
+}
 
 ClientsList::ClientsList() {
+    init = false;
     data = new Client[1];
     length = 0;
     capacity = 1;
+
+    read_file(this);
+    init = true;
 }
 
 void ClientsList::resize(u32 size) {
@@ -32,6 +98,9 @@ void ClientsList::push(Client client) {
         resize(capacity * 2);
 
     data[length++] = client;
+
+    if (init)
+        push_file(&client);
 }
 
 void ClientsList::remove(in_addr_t ip) {
@@ -75,4 +144,13 @@ Client *ClientsList::oldest() {
             oldest = &data[i];
 
     return oldest;
+}
+
+string ClientsList::to_string() {
+    string res;
+
+    for (u32 i = 0; i < length; i++)
+        res.append(data[i].to_string());
+
+    return res;
 }
