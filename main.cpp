@@ -39,7 +39,7 @@ int main() {
     }
 
     serv_addr.sin_family = AF_INET;
-    serv_addr.sin_addr.s_addr = localhost;
+    serv_addr.sin_addr.s_addr = LOCALHOST;
     serv_addr.sin_port = htons(port);
 
     if (bind(fd, (sockaddr *)&serv_addr, socklen) < 0) {

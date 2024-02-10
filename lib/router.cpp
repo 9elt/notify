@@ -26,7 +26,7 @@ string handle_req(sockaddr_in addr, Request request) {
                                  : response(OK, tmp);
     };
     case CREATE_NOTIFICATION: {
-        if (ip != localhost)
+        if (ip != LOCALHOST)
             return response(NOT_FOUND, "Not Found");
 
         if (request.body.length() == 0)

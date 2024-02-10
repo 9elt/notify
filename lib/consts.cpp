@@ -4,7 +4,7 @@
 
 using namespace std;
 
-in_addr_t const localhost = inet_addr("127.0.0.1");
+in_addr_t const LOCALHOST = inet_addr("127.0.0.1");
 
 string const NOT_FOUND = "HTTP/1.1 404\nContent-Type: text/plain\n\n";
 
