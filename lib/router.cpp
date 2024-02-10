@@ -1,7 +1,4 @@
-#include "consts.cpp"
-#include "notification.cpp"
-#include "request.cpp"
-#include <netinet/in.h>
+#include "router.hpp"
 
 ClientsList clients;
 
