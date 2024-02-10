@@ -52,6 +52,8 @@ int main() {
     if (listen(fd, 32) == -1)
         close(fd);
 
+    Router router;
+
     while (true) {
         sfd = accept(fd, (sockaddr *)&cli_addr, &socklen);
 
@@ -70,7 +72,7 @@ int main() {
             continue;
         }
 
-        string response = handle_req(cli_addr, Request(buffer));
+        string response = router.handle_req(cli_addr, Request(buffer));
 
         send(sfd, response.data(), response.length(), 0);
 

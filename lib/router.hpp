@@ -3,6 +3,8 @@
 #include "request.hpp"
 #include <netinet/in.h>
 
-char *response(string headers, string body);
-
-string handle_req(sockaddr_in addr, Request request);
+struct Router {
+    ClientsList clients;
+    NotificationsList notifications;
+    string handle_req(sockaddr_in addr, Request request);
+};
