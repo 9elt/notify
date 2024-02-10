@@ -35,10 +35,10 @@ string Router::handle_req(sockaddr_in addr, Request request) {
         if (!clients.has(ip)) {
             clients.push(Client{ip});
 
-            return response(OK, "Client created\n");
+            return response(OK, "Client registered\n");
         }
 
-        return response(OK, "Client already exists\n");
+        return response(OK, "Client already registered\n");
     };
     case DELETE_CLIENT: {
         clients.remove(ip);

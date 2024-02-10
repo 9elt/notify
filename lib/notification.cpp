@@ -57,7 +57,7 @@ string NotificationsList::get_client_message(Client *client) {
     for (u32 i = 0; i < length; i++)
         if (data[i].date > last_seen) {
             res.append(data[i].message);
-            res.append("\n");
+            res.append("\n\n");
         }
 
     return res;

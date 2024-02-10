@@ -1,26 +1,26 @@
 #include "request.hpp"
 
 Request::Request(string reqstr) {
+    if (reqstr.rfind("GET /version", 0) == 0) {
+        endpoint = GET_VERSION;
+        return;
+    }
+
     if (reqstr.rfind("GET /", 0) == 0) {
         endpoint = GET_NOTIFICATIONS;
         return;
     }
-
-    if (reqstr.rfind("POST /", 0) == 0)
-        endpoint = CREATE_NOTIFICATION;
 
     if (reqstr.rfind("POST /client", 0) == 0) {
         endpoint = CREATE_CLIENT;
         return;
     }
 
+    if (reqstr.rfind("POST /", 0) == 0)
+        endpoint = CREATE_NOTIFICATION;
+
     if (reqstr.rfind("DELETE /client", 0) == 0) {
         endpoint = DELETE_CLIENT;
-        return;
-    }
-
-    if (reqstr.rfind("GET /version", 0) == 0) {
-        endpoint = GET_VERSION;
         return;
     }
 
