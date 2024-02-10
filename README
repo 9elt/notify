@@ -1,3 +1,18 @@
 notify
 
 A simple notification server
+
+GET /
+read client notifications
+
+POST /
+post a notification (only from localhost)
+
+GET /version
+get current version
+
+POST /client
+register a client
+
+DELETE /client
+delete a client
