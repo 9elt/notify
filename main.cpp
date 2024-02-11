@@ -1,3 +1,4 @@
+#include "config.cpp"
 #include "router.hpp"
 #include <arpa/inet.h>
 #include <iostream>
@@ -10,7 +11,6 @@
 #include <unistd.h>
 
 int main() {
-    unsigned short port = 5555;
 
     int fd;
     int sfd;
@@ -38,14 +38,14 @@ int main() {
 
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = LOCALHOST;
-    serv_addr.sin_port = htons(port);
+    serv_addr.sin_port = htons(PORT);
 
     if (bind(fd, (sockaddr *)&serv_addr, socklen) < 0) {
         cout << "bind failed" << endl;
         return 1;
     }
 
-    cout << "listening on " << port << endl;
+    cout << "listening on " << PORT << endl;
 
     if (listen(fd, 32) == -1)
         close(fd);

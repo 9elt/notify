@@ -1,66 +1,9 @@
 #include "notification.hpp"
+#include "config.cpp"
 #include <ctime>
 #include <fstream>
 #include <iostream>
 #include <sstream>
-
-string const DATABASE = "./data/notifications";
-
-time_t const MAX_TIME = 2764800;
-
-void read_file(NotificationsList *list) {
-    time_t now = time(0);
-
-    ifstream f(DATABASE);
-
-    if (!f)
-        return;
-
-    stringstream buffer;
-    buffer << f.rdbuf();
-
-    string data = buffer.str();
-
-    int t = 0;
-
-    string notif[2];
-
-    for (u32 i = 0; i < data.length(); i++) {
-        auto c = data[i];
-        if (c == *"|")
-            t++;
-        else if (c == *";") {
-            i++;
-            t--;
-            time_t date = stoi(notif[0]);
-
-            if (now - date < MAX_TIME)
-                list->push(Notification{date, notif[1]});
-
-            notif[0] = "";
-            notif[1] = "";
-        } else
-            notif[t] += data[i];
-    }
-}
-
-void push_file(Notification *notification) {
-    ofstream f;
-    f.open(DATABASE, ios_base::app);
-    f << notification->to_string();
-}
-
-string sanitize(string raw) {
-    size_t pos;
-
-    while ((pos = raw.find("|")) != string::npos)
-        raw.replace(pos, 1, "-");
-
-    while ((pos = raw.find(";")) != string::npos)
-        raw.replace(pos, 1, ",");
-
-    return raw;
-}
 
 Notification::Notification() {}
 
@@ -74,8 +17,26 @@ Notification::Notification(time_t _date, string _message) {
     message = _message;
 }
 
+string Notification::sanitize(string raw) {
+    size_t pos;
+
+    while ((pos = raw.find("|")) != string::npos)
+        raw.replace(pos, 1, "-");
+
+    while ((pos = raw.find(";")) != string::npos)
+        raw.replace(pos, 1, ",");
+
+    return raw;
+}
+
 string Notification::to_string() {
     return std::to_string(date) + "|" + message + ";\n";
+}
+
+void Notification::save() {
+    ofstream f;
+    f.open(NOTIFICATION_DATABASE, ios_base::app);
+    f << to_string();
 }
 
 NotificationsList::NotificationsList() {
@@ -84,7 +45,7 @@ NotificationsList::NotificationsList() {
     length = 0;
     capacity = 16;
 
-    read_file(this);
+    load();
     init = true;
 }
 
@@ -107,24 +68,7 @@ void NotificationsList::push(Notification notification) {
     data[length++] = notification;
 
     if (init)
-        push_file(&notification);
-}
-
-void NotificationsList::clear_read(time_t before) {
-    Notification tmp[length];
-    u32 nlen = 0;
-
-    for (u32 i = 0; i < length; i++)
-        if (data[i].date > before)
-            tmp[nlen++] = data[i];
-
-    delete[] data;
-    data = new Notification[nlen];
-
-    for (u32 i = 0; i < nlen; i++)
-        data[i] = tmp[i];
-
-    length = nlen;
+        notification.save();
 }
 
 string NotificationsList::get_client_message(Client *client) {
@@ -148,4 +92,40 @@ string NotificationsList::to_string() {
         res.append(data[i].to_string());
 
     return res;
+}
+
+void NotificationsList::load() {
+    time_t now = time(0);
+
+    ifstream f(NOTIFICATION_DATABASE);
+
+    if (!f)
+        return;
+
+    stringstream buffer;
+    buffer << f.rdbuf();
+
+    string data = buffer.str();
+
+    int t = 0;
+
+    string notif[2];
+
+    for (u32 i = 0; i < data.length(); i++) {
+        auto c = data[i];
+        if (c == *"|")
+            t++;
+        else if (c == *";") {
+            i++;
+            t--;
+            time_t date = stoi(notif[0]);
+
+            if (now - date < MAX_TIME)
+                push(Notification{date, notif[1]});
+
+            notif[0] = "";
+            notif[1] = "";
+        } else
+            notif[t] += data[i];
+    }
 }
