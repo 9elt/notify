@@ -11,9 +11,3 @@ post a notification (only from localhost)
 
 GET /version
 server version
-
-POST /client
-register client (current ip)
-
-DELETE /client
-delete client (current ip)
